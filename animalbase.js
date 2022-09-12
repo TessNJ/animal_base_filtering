@@ -3,6 +3,7 @@
 window.addEventListener("DOMContentLoaded", start);
 
 let allAnimals = [];
+let isAcending = false;
 
 // The prototype for all animals:
 const Animal = {
@@ -25,6 +26,9 @@ function registerButtons() {
   document
     .querySelectorAll("[data-action='filter']")
     .forEach((button) => button.addEventListener("click", selectFilter));
+  document
+    .querySelectorAll("[data-action='sort']")
+    .forEach((th) => th.addEventListener("click", selectSorting));
 }
 
 async function loadJSON() {
@@ -53,7 +57,7 @@ function preapareObject(jsonObject) {
 
   return animal;
 }
-
+//Filtering
 function selectFilter(event) {
   const filter = event.target.dataset.filter;
   console.log(filter);
@@ -80,6 +84,115 @@ function isDog(animal) {
   return animal.type === "dog";
 }
 
+//Sorting
+function selectSorting(event) {
+  const sort = event.target.dataset.sort;
+  // console.log("here", sort);
+  if (sort === "name") {
+    if (isAcending) {
+      allAnimals.sort(sortNameAcending);
+    } else {
+      allAnimals.sort(sortNameDecending);
+    }
+    isAcending = !isAcending;
+  } else if (sort === "type") {
+    if (isAcending) {
+      allAnimals.sort(sortTypeAcending);
+    } else {
+      allAnimals.sort(sortTypeDecending);
+    }
+    isAcending = !isAcending;
+  } else if (sort === "desc") {
+    if (isAcending) {
+      allAnimals.sort(sortDescAcending);
+    } else {
+      allAnimals.sort(sortDescDecending);
+    }
+    isAcending = !isAcending;
+  } else if (sort === "age") {
+    if (isAcending) {
+      allAnimals.sort(sortAgeAcending);
+    } else {
+      allAnimals.sort(sortAgeDecending);
+    }
+    isAcending = !isAcending;
+  }
+  displayList(allAnimals);
+}
+
+function sortNameAcending(a, b) {
+  if (a.name < b.name) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+function sortNameDecending(a, b) {
+  if (a.name > b.name) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+function sortTypeAcending(a, b) {
+  if (a.type < b.type) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+function sortTypeDecending(a, b) {
+  if (a.type > b.type) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+function sortDescAcending(a, b) {
+  if (a.desc < b.desc) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+function sortDescDecending(a, b) {
+  if (a.desc > b.desc) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+function sortAgeAcending(a, b) {
+  if (a.age < b.age) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+function sortAgeDecending(a, b) {
+  if (a.age > b.age) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+/* 
+function sortAcending(a, b) {
+  if (a.var < b.var) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+function sortDecending(a, b) {
+  if (a.var > b.var) {
+    return -1;
+  } else {
+    return 1;
+  }
+} */
+
+//Displaying
 function displayList(animals) {
   // clear the list
   document.querySelector("#list tbody").innerHTML = "";
