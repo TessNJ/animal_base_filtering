@@ -3,8 +3,12 @@
 window.addEventListener("DOMContentLoaded", start);
 
 let allAnimals = [];
-let isAcending = false;
-let filteredList;
+
+const settings = {
+  filter: "all",
+  sortBy: "name",
+  sortDir: "asc",
+};
 
 // The prototype for all animals:
 const Animal = {
@@ -12,7 +16,6 @@ const Animal = {
   desc: "-unknown animal-",
   type: "",
   age: 0,
-  star: "",
   star: false,
   winner: false,
 };
@@ -50,15 +53,13 @@ async function loadJSON() {
 function prepareObjects(jsonData) {
   allAnimals = jsonData.map(preapareObject);
 
-  // TODO: This might not be the function we want to call first
-  filterList(allAnimals);
+  buildList();
 }
 
 function preapareObject(jsonObject) {
   const animal = Object.create(Animal);
 
   const texts = jsonObject.fullname.split(" ");
-  animal.isStar = false;
   animal.name = texts[0];
   animal.desc = texts[2];
   animal.type = texts[3];
@@ -70,19 +71,24 @@ function preapareObject(jsonObject) {
 //Filtering
 function selectFilter(event) {
   const filter = event.target.dataset.filter;
-  filterList(filter);
+  setFilter(filter);
 }
 
-function filterList(animalType) {
-  filteredList = allAnimals;
-  if (animalType === "cat") {
+function setFilter(filter) {
+  settings.filter = filter;
+  buildList();
+}
+
+function filterList(filteredList) {
+  // filteredList = allAnimals;
+  if (settings.filter === "cat") {
     //Create a filteredlist of only cats
     filteredList = filteredList.filter(isCat);
-  } else if (animalType === "dog") {
+  } else if (settings.filter === "dog") {
     //Create a filteredlist of only dogs
     filteredList = filteredList.filter(isDog);
   }
-  displayList(filteredList);
+  return filteredList;
 }
 
 function isCat(animal) {
@@ -105,13 +111,18 @@ function selectSorting(event) {
     event.target.dataset.sortDirection = "asc";
   }
   console.log(sortBy, sortDir);
-  sortList(sortBy, sortDir);
+  setSort(sortBy, sortDir);
 }
 
-function sortList(sortBy, sortDir) {
-  let sortedList = filteredList;
+function setSort(sortBy, sortDir) {
+  settings.sortBy = sortBy;
+  settings.sortDir = sortDir;
+  buildList();
+}
+
+function sortList(sortedList) {
   let direction = 1;
-  if (sortDir === "desc") {
+  if (settings.sortDir === "desc") {
     direction = -1;
   } else {
     direction = 1;
@@ -119,45 +130,19 @@ function sortList(sortBy, sortDir) {
 
   sortedList = sortedList.sort(sortByProperty);
   function sortByProperty(animalA, animalB) {
-    if (animalA[sortBy] < animalB[sortBy]) {
+    if (animalA[settings.sortBy] < animalB[settings.sortBy]) {
       return -1 * direction;
     } else {
       return 1 * direction;
     }
   }
+  return sortedList;
+}
+
+function buildList() {
+  const currentList = filterList(allAnimals);
+  const sortedList = sortList(currentList);
   displayList(sortedList);
-}
-
-function sortStarAcending(a, b) {
-  if (a.isStar < b.isStar) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-
-function sortStarDecending(a, b) {
-  if (a.isStar > b.isStar) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-
-function sortWinnerAcending(a, b) {
-  if (a.winner < b.winner) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-
-function sortWinnerDecending(a, b) {
-  if (a.winner > b.winner) {
-    return -1;
-  } else {
-    return 1;
-  }
 }
 
 //Displaying, Stars and Winners
@@ -197,7 +182,7 @@ function displayAnimal(animal) {
     } else {
       animal.star = true;
     }
-    sortList(allAnimals);
+    buildList();
   }
 
   // append clone to list
