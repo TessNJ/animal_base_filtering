@@ -5,7 +5,6 @@ window.addEventListener("DOMContentLoaded", start);
 let allAnimals = [];
 let isAcending = false;
 let filteredList;
-let isStar = false;
 
 // The prototype for all animals:
 const Animal = {
@@ -14,9 +13,11 @@ const Animal = {
   type: "",
   age: 0,
   star: "",
-  isStar: isStar,
+  star: false,
+  winner: false,
 };
 
+//Start / Init
 function start() {
   console.log("ready");
 
@@ -26,6 +27,7 @@ function start() {
   loadJSON();
 }
 
+//Register Buttons
 function registerButtons() {
   document
     .querySelectorAll("[data-action='filter']")
@@ -35,6 +37,7 @@ function registerButtons() {
     .forEach((th) => th.addEventListener("click", selectSorting));
 }
 
+//Load json
 async function loadJSON() {
   const response = await fetch("animals.json");
   const jsonData = await response.json();
@@ -43,6 +46,7 @@ async function loadJSON() {
   prepareObjects(jsonData);
 }
 
+//Prepare animals
 function prepareObjects(jsonData) {
   allAnimals = jsonData.map(preapareObject);
 
@@ -62,6 +66,7 @@ function preapareObject(jsonObject) {
 
   return animal;
 }
+
 //Filtering
 function selectFilter(event) {
   const filter = event.target.dataset.filter;
@@ -89,109 +94,40 @@ function isDog(animal) {
 }
 
 //Sorting
-
 function selectSorting(event) {
-  const sort = event.target.dataset.sort;
-  console.log(sort);
-  sortList(sort);
+  const sortBy = event.target.dataset.sort;
+  const sortDir = event.target.dataset.sortDirection;
+
+  //Toggle Direction
+  if (sortDir === "asc") {
+    event.target.dataset.sortDirection = "desc";
+  } else {
+    event.target.dataset.sortDirection = "asc";
+  }
+  console.log(sortBy, sortDir);
+  sortList(sortBy, sortDir);
 }
-function sortList(sortType) {
+
+function sortList(sortBy, sortDir) {
   let sortedList = filteredList;
-  if (sortType === "name") {
-    if (isAcending) {
-      sortedList = sortedList.sort(sortNameAcending);
+  let direction = 1;
+  if (sortDir === "desc") {
+    direction = -1;
+  } else {
+    direction = 1;
+  }
+
+  sortedList = sortedList.sort(sortByProperty);
+  function sortByProperty(animalA, animalB) {
+    if (animalA[sortBy] < animalB[sortBy]) {
+      return -1 * direction;
     } else {
-      sortedList = sortedList.sort(sortNameDecending);
+      return 1 * direction;
     }
-    isAcending = !isAcending;
-  } else if (sortType === "type") {
-    if (isAcending) {
-      sortedList = sortedList.sort(sortTypeAcending);
-    } else {
-      sortedList = sortedList.sort(sortTypeDecending);
-    }
-    isAcending = !isAcending;
-  } else if (sortType === "desc") {
-    if (isAcending) {
-      sortedList = sortedList.sort(sortDescAcending);
-    } else {
-      sortedList = sortedList.sort(sortDescDecending);
-    }
-    isAcending = !isAcending;
-  } else if (sortType === "age") {
-    if (isAcending) {
-      sortedList = sortedList.sort(sortAgeAcending);
-    } else {
-      sortedList = sortedList.sort(sortAgeDecending);
-    }
-    isAcending = !isAcending;
-  } else if (sortType === "star") {
-    if (isAcending) {
-      sortedList = sortedList.sort(sortStarAcending);
-    } else {
-      sortedList = sortedList.sort(sortStarDecending);
-    }
-    isAcending = !isAcending;
   }
   displayList(sortedList);
 }
 
-function sortNameAcending(a, b) {
-  if (a.name < b.name) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-function sortNameDecending(a, b) {
-  if (a.name > b.name) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-function sortTypeAcending(a, b) {
-  if (a.type < b.type) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-function sortTypeDecending(a, b) {
-  if (a.type > b.type) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-function sortDescAcending(a, b) {
-  if (a.desc < b.desc) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-function sortDescDecending(a, b) {
-  if (a.desc > b.desc) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-function sortAgeAcending(a, b) {
-  if (a.age < b.age) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-function sortAgeDecending(a, b) {
-  if (a.age > b.age) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
 function sortStarAcending(a, b) {
   if (a.isStar < b.isStar) {
     return -1;
@@ -199,6 +135,7 @@ function sortStarAcending(a, b) {
     return 1;
   }
 }
+
 function sortStarDecending(a, b) {
   if (a.isStar > b.isStar) {
     return -1;
@@ -207,7 +144,23 @@ function sortStarDecending(a, b) {
   }
 }
 
-//Displaying
+function sortWinnerAcending(a, b) {
+  if (a.winner < b.winner) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
+function sortWinnerDecending(a, b) {
+  if (a.winner > b.winner) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
+//Displaying, Stars and Winners
 function displayList(animals) {
   // clear the list
   document.querySelector("#list tbody").innerHTML = "";
@@ -222,43 +175,37 @@ function displayAnimal(animal) {
   const clone = document
     .querySelector("template#animal")
     .content.cloneNode(true);
-  // clone.querySelector("[data-field='star']").textContent = "☆";
-  // clone
-  //   .querySelector("[data-field='star']")
-  //   .addEventListener("click", (event) => {
-  //     animal.isStared = !animal.isStared;
-  //     let starText;
-  //     if (animal.isStared) {
-  //       starText = "⭐";
-  //     } else {
-  //       starText = "☆";
-  //     }
-  //     event.target.textContent = starText;
-  //   });
-
-  animal.isStar
-    ? (clone.querySelector("[data-field='star']").textContent = "⭐")
-    : (clone.querySelector("[data-field='star']").textContent = "☆");
-  clone
-    .querySelector("[data-field='star']")
-    .addEventListener("click", (event) => {
-      animal.isStar = !animal.isStar;
-      console.log(animal.isStar);
-      if (animal.isStar) {
-        event.target.textContent = "⭐";
-      } else {
-        event.target.textContent = "☆";
-      }
-
-      sortList(allAnimals);
-    });
-
   // set clone data
+
+  // Easy content
   clone.querySelector("[data-field=name]").textContent = animal.name;
   clone.querySelector("[data-field=desc]").textContent = animal.desc;
   clone.querySelector("[data-field=type]").textContent = animal.type;
   clone.querySelector("[data-field=age]").textContent = animal.age;
 
+  //Stars
+  if (animal.star === true) {
+    clone.querySelector("[data-field=star]").textContent = "⭐";
+  } else {
+    clone.querySelector("[data-field=star]").textContent = "☆";
+  }
+
+  clone.querySelector("[data-field=star]").addEventListener("click", clickStar);
+  function clickStar() {
+    if (animal.star === true) {
+      animal.star = false;
+    } else {
+      animal.star = true;
+    }
+    sortList(allAnimals);
+  }
+
   // append clone to list
   document.querySelector("#list tbody").appendChild(clone);
 }
+
+/* //
+function filterWinner(animal) {
+  return animal.winner === true;
+}
+ */
