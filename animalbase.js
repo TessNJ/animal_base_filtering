@@ -4,6 +4,7 @@ window.addEventListener("DOMContentLoaded", start);
 
 let allAnimals = [];
 let isAcending = false;
+let filteredList;
 
 // The prototype for all animals:
 const Animal = {
@@ -88,6 +89,8 @@ function isDog(animal) {
 function selectSorting(event) {
   const sort = event.target.dataset.sort;
   // console.log("here", sort);
+  // let allAnimals = filteredList;
+  let varItem;
   if (sort === "name") {
     if (isAcending) {
       allAnimals.sort(sortNameAcending);
@@ -117,6 +120,45 @@ function selectSorting(event) {
     }
     isAcending = !isAcending;
   }
+  /*  const sort = event.target.dataset.sort;
+  // console.log("here", sort);
+  let varItem = sort;
+
+  //OR
+  let varItem;
+  if (sort === "name") {
+    varItem = sort;
+    if (isAcending) {
+      allAnimals.sort(sortAcending);
+    } else {
+      allAnimals.sort(sortDecending);
+    }
+    isAcending = !isAcending;
+  } else if (sort === "type") {
+    varItem = sort;
+    if (isAcending) {
+      allAnimals.sort(sortAcending);
+    } else {
+      allAnimals.sort(sortDecending);
+    }
+    isAcending = !isAcending;
+  } else if (sort === "desc") {
+    varItem = "desc";
+    if (isAcending) {
+      allAnimals.sort(sortAcending);
+    } else {
+      allAnimals.sort(sortDecending);
+    }
+    isAcending = !isAcending;
+  } else if (sort === "age") {
+    varItem = "age";
+    if (isAcending) {
+      allAnimals.sort(sortAcending);
+    } else {
+      allAnimals.sort(sortDecending);
+    }
+    isAcending = !isAcending;
+  } */
   displayList(allAnimals);
 }
 
@@ -176,16 +218,16 @@ function sortAgeDecending(a, b) {
     return 1;
   }
 }
-/* 
-function sortAcending(a, b) {
-  if (a.var < b.var) {
+
+/* function sortAcending(a, b) {
+  if (a.varItem < b.var) {
     return -1;
   } else {
     return 1;
   }
 }
 function sortDecending(a, b) {
-  if (a.var > b.var) {
+  if (a.varItem > b.var) {
     return -1;
   } else {
     return 1;
