@@ -12,6 +12,7 @@ const Animal = {
   desc: "-unknown animal-",
   type: "",
   age: 0,
+  star: "",
 };
 
 function start() {
@@ -42,6 +43,7 @@ async function loadJSON() {
 
 function prepareObjects(jsonData) {
   allAnimals = jsonData.map(preapareObject);
+  filteredList = allAnimals;
 
   // TODO: This might not be the function we want to call first
   displayList(allAnimals);
@@ -51,6 +53,7 @@ function preapareObject(jsonObject) {
   const animal = Object.create(Animal);
 
   const texts = jsonObject.fullname.split(" ");
+  animal.isStared = false;
   animal.name = texts[0];
   animal.desc = texts[2];
   animal.type = texts[3];
@@ -61,7 +64,6 @@ function preapareObject(jsonObject) {
 //Filtering
 function selectFilter(event) {
   const filter = event.target.dataset.filter;
-  console.log(filter);
   filterList(filter);
 }
 
@@ -86,32 +88,35 @@ function isDog(animal) {
 }
 
 //Sorting
+
 function selectSorting(event) {
-  let sortedList = filteredList;
   const sort = event.target.dataset.sort;
-  // console.log("here", sort);
-  if (sort === "name") {
+  sortList(sort);
+}
+function sortList(sortType) {
+  let sortedList = filteredList;
+  if (sortType === "name") {
     if (isAcending) {
       sortedList.sort(sortNameAcending);
     } else {
       sortedList.sort(sortNameDecending);
     }
     isAcending = !isAcending;
-  } else if (sort === "type") {
+  } else if (sortType === "type") {
     if (isAcending) {
       sortedList.sort(sortTypeAcending);
     } else {
       sortedList.sort(sortTypeDecending);
     }
     isAcending = !isAcending;
-  } else if (sort === "desc") {
+  } else if (sortType === "desc") {
     if (isAcending) {
       sortedList.sort(sortDescAcending);
     } else {
       sortedList.sort(sortDescDecending);
     }
     isAcending = !isAcending;
-  } else if (sort === "age") {
+  } else if (sortType === "age") {
     if (isAcending) {
       sortedList.sort(sortAgeAcending);
     } else {
@@ -119,6 +124,9 @@ function selectSorting(event) {
     }
     isAcending = !isAcending;
   }
+  /* else if (sort === "star") {
+    sortedList.sort(sortStar);
+  } */
   displayList(sortedList);
 }
 
@@ -178,21 +186,14 @@ function sortAgeDecending(a, b) {
     return 1;
   }
 }
-/* 
-function sortAcending(a, b) {
-  if (a.var < b.var) {
+
+function sortStar(a, b) {
+  if (a.star > b.star) {
     return -1;
   } else {
     return 1;
   }
 }
-function sortDecending(a, b) {
-  if (a.var > b.var) {
-    return -1;
-  } else {
-    return 1;
-  }
-} */
 
 //Displaying
 function displayList(animals) {
@@ -204,10 +205,24 @@ function displayList(animals) {
 }
 
 function displayAnimal(animal) {
+  console.log(animal);
   // create clone
   const clone = document
     .querySelector("template#animal")
     .content.cloneNode(true);
+  // clone.querySelector("[data-field='star']").textContent = "☆";
+  // clone
+  //   .querySelector("[data-field='star']")
+  //   .addEventListener("click", (event) => {
+  //     animal.isStared = !animal.isStared;
+  //     let starText;
+  //     if (animal.isStared) {
+  //       starText = "⭐";
+  //     } else {
+  //       starText = "☆";
+  //     }
+  //     event.target.textContent = starText;
+  //   });
 
   // set clone data
   clone.querySelector("[data-field=name]").textContent = animal.name;
