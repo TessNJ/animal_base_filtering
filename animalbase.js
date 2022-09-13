@@ -4,6 +4,7 @@ window.addEventListener("DOMContentLoaded", start);
 
 let allAnimals = [];
 let isAcending = false;
+let filteredList;
 
 // The prototype for all animals:
 const Animal = {
@@ -65,13 +66,13 @@ function selectFilter(event) {
 }
 
 function filterList(animalType) {
-  let filteredList = allAnimals;
+  filteredList = allAnimals;
   if (animalType === "cat") {
     //Create a filteredlist of only cats
-    filteredList = allAnimals.filter(isCat);
+    filteredList = filteredList.filter(isCat);
   } else if (animalType === "dog") {
     //Create a filteredlist of only dogs
-    filteredList = allAnimals.filter(isDog);
+    filteredList = filteredList.filter(isDog);
   }
   displayList(filteredList);
 }
@@ -86,38 +87,39 @@ function isDog(animal) {
 
 //Sorting
 function selectSorting(event) {
+  let sortedList = filteredList;
   const sort = event.target.dataset.sort;
   // console.log("here", sort);
   if (sort === "name") {
     if (isAcending) {
-      allAnimals.sort(sortNameAcending);
+      sortedList.sort(sortNameAcending);
     } else {
-      allAnimals.sort(sortNameDecending);
+      sortedList.sort(sortNameDecending);
     }
     isAcending = !isAcending;
   } else if (sort === "type") {
     if (isAcending) {
-      allAnimals.sort(sortTypeAcending);
+      sortedList.sort(sortTypeAcending);
     } else {
-      allAnimals.sort(sortTypeDecending);
+      sortedList.sort(sortTypeDecending);
     }
     isAcending = !isAcending;
   } else if (sort === "desc") {
     if (isAcending) {
-      allAnimals.sort(sortDescAcending);
+      sortedList.sort(sortDescAcending);
     } else {
-      allAnimals.sort(sortDescDecending);
+      sortedList.sort(sortDescDecending);
     }
     isAcending = !isAcending;
   } else if (sort === "age") {
     if (isAcending) {
-      allAnimals.sort(sortAgeAcending);
+      sortedList.sort(sortAgeAcending);
     } else {
-      allAnimals.sort(sortAgeDecending);
+      sortedList.sort(sortAgeDecending);
     }
     isAcending = !isAcending;
   }
-  displayList(allAnimals);
+  displayList(sortedList);
 }
 
 function sortNameAcending(a, b) {
