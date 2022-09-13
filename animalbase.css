@@ -2,10 +2,12 @@
   cursor: pointer;
 }
 
-[data-field="winner"],
-[data-sort="winner"] {
-  filter: grayscale(100%);
-  cursor: pointer;
+td[data-field="winner"]::after {
+  content: "🏆";
+}
+td[data-field="winner"][data-winner="false"]::after {
+  content: "🏆";
+  filter: grayscale(1);
 }
 
 #sorting th.sortby {

@@ -184,13 +184,25 @@ function displayAnimal(animal) {
     }
     buildList();
   }
+  //Winner
+  /*   if (animal.winner === true) {
+    clone.querySelector("[data-field=winner]").textContent = "⭐";
+  } else {
+    clone.querySelector("[data-field=winner]").textContent = "☆";
+  }
+
+  clone
+    .querySelector("[data-field=winner]")
+    .addEventListener("click", clickWin);
+  function clickWin() {
+    if (animal.star === true) {
+      animal.star = false;
+    } else {
+      animal.star = true;
+    }
+    buildList();
+  } */
 
   // append clone to list
   document.querySelector("#list tbody").appendChild(clone);
 }
-
-/* //
-function filterWinner(animal) {
-  return animal.winner === true;
-}
- */
